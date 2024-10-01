@@ -12,5 +12,8 @@ stop:
 start:
 	@docker compose -f ./srcs/docker-compose.yml start
 
+cache:
+	@docker-compose -f ./srcs/docker-compose.yml build --no-cache
+
 status:
 	@docker ps
