@@ -1,25 +1,36 @@
-# Use Debian as base
-FROM debian:12
+FROM debian:buster
 
-# Install NGINX and OpenSSL for SSL certificate generation
-RUN apt-get update && apt-get install -y nginx openssl
+# Update and upgrade in order to install nginx
+RUN apt upgrade -y && apt update -y
 
-# Create the SSL directory inside the container
+# Install nginx
+RUN apt install -y nginx
+
+# Access the container terminal
+RUN apt install vim -y
+RUN apt install curl -y
+
+# TSL
+# Create a folder to store the certificate
 RUN mkdir -p /etc/nginx/ssl
+#Install OpenSSl. Tool for SSL certificate management/creation.
+RUN apt install openssl
+# Create SSL certificate with OpenSSL and pre-fill the -keyout option
+RUN openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt \
+	-keyout /etc/nginx/ssl/inception.key \
+	-subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=mcatalan.42.fr/UID=mcatalan"
 
-# Generate a self-signed SSL certificate
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/cert.key \
-    -out /etc/nginx/ssl/cert.crt \
-    -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=localhost"
+# Create folder to store NGINX config
+RUN mkdir -p /run/nginx
+# Take base NGINX conf file and modify with our ./conf/nginx.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-# Copy custom nginx config if necessary (Optional)
- COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+#Ensure that we'll have te rights first the root then the main user
+RUN chmod 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
-# Expose port 443 for HTTPS
 EXPOSE 443
 
-# Start NGINX in the foreground
+# Launch NGINX
 CMD ["nginx", "-g", "daemon off;"]
-
 

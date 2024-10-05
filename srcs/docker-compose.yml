@@ -1,16 +1,79 @@
-version: "3.8"
-
 services:
   nginx:
-    build:
-      context: ./requirements/nginx
+    container_name: nginx
+    build: ./requirements/nginx
+    image: nginx
     ports:
-      - "443:443"
+      - 443:443
+    volumes:
+      - wordpress_data:/var/www/html
     environment:
-      - DOMAIN_NAME=mcatalan.42.fr
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      CERTS_CRT: ${CERTS_CRT}
+      CERTS_KEY: ${CERTS_KEY}
+      MYSQL_USER: ${MYSQL_USER}
+    restart: always
     networks:
-      - nginx_network
+      - inception
+
+  mariadb:
+    image: mariadb
+    restart: always
+    container_name: mariadb
+    build:
+      context: ./requirements/mariadb
+    networks:
+      - inception
+    environment:
+      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress
+    restart: always
+    container_name: wordpress
+    depends_on:
+      - mariadb    
+    build: ./requirements/wordpress
+    networks:
+      - inception
+    env_file:
+      - .env
+    volumes:
+      - wordpress_data:/var/www/html
 
 networks:
-  nginx_network:
+  inception:
+    name: inception
     driver: bridge
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/mysql
+      o: bind
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/wordpress
+      o: bind
+
+#   nginx:
+#     image: nginx
+#     container_name: nginx
+#     build: ./requirements/nginx
+#     ports:
+#         - 443:443
+#     restart: always
+#     networks:
+#         - inception
+#     volumes:
+#         - wordpress_data:/var/www/hmtl
