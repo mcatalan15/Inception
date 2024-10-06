@@ -5,13 +5,12 @@ services:
     image: nginx
     ports:
       - 443:443
+    depends_on:
+      - wordpress
     volumes:
       - wordpress_data:/var/www/html
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      CERTS_CRT: ${CERTS_CRT}
-      CERTS_KEY: ${CERTS_KEY}
-      MYSQL_USER: ${MYSQL_USER}
+    env_file:
+      - .env
     restart: always
     networks:
       - inception
@@ -65,15 +64,3 @@ volumes:
       type: none
       device: ${HOME}/data/wordpress
       o: bind
-
-#   nginx:
-#     image: nginx
-#     container_name: nginx
-#     build: ./requirements/nginx
-#     ports:
-#         - 443:443
-#     restart: always
-#     networks:
-#         - inception
-#     volumes:
-#         - wordpress_data:/var/www/hmtl

@@ -1,26 +1,35 @@
-#! /bin/bash
+#!/bin/bash
 
 service mysql start;
 
-sleep 5;
+# Wait for MySQL to start
+sleep 10;
 
-# Create a DB if does not exist. Named after the variable SQL_DATABASE in .env file
-mysql -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
+# Create the database if it does not exist
+mysql -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
 
-# Creating a user that can manipulate the DB. Usage of SQL_USER & SQL_PASSWORD indicated in .env file
-mysql -e "CREATE USER IF NOT EXIST \`${SQL_USER}\`@'localhost' IDENTIFIED BY '${SQL_PASSWORD}';"
+# Create a user if it does not exist
+mysql -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'wordpress' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
-# Give rights to the user
-mysql -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO \`${SQL_USER}`@'%' IDENTIFIED BY \'${SQL_PASSWORD}`';"
+# Grant privileges on the database to the user
+mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
+mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'localhost';"
+mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'wordpress';"
 
-# Change root user
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
+# Create root user with wildcard host if it does not exist
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
+
+# Grant all privileges to the root user
+mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
 
 # Refresh all so that MySQL takes it into account
 mysql -e "FLUSH PRIVILEGES;"
 
-# Restart MySQL to take effect
-mysqladmin -u root -p$SQL_ROOT_PASSWORD shutdown
+# Optionally, restart MySQL (ensure it’s required for your case)
+# mysqladmin -u root -p${SQL_ROOT_PASSWORD} shutdown
 
 # Start SQL
-exec mysqld_safe
+exec mysqld
+
