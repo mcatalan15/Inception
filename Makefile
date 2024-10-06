@@ -9,12 +9,13 @@ vol:
 	sudo chmod -R 777 ${HOME}/data/
 	sudo chown -R $(USER) $(HOME)/data
 
+#ELIMINAR FOLDERS DESDE TERMINAL Y BORRAR SUDO PARA PROBAR
+
 clean:
 	@docker stop $$(docker ps -qa);
 	@docker rm $$(docker ps -qa);
 	@docker rmi -f $$(docker images -qa);
 	@docker volume rm $$(docker volume ls -q);
-	#@docker network rm $$(docker network ls -q);
 	@docker network rm inception;
 	sudo rm -rf /home/mcatalan/data/mysql/*
 	sudo rm -rf /home/mcatalan/data/wordpress/*

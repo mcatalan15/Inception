@@ -1,8 +1,8 @@
-FROM debian:buster
+FROM debian:11.7
 
 RUN apt-get update && apt-get upgrade -y  
 
-RUN apt-get -y install curl php7.3-fpm php7.3-mysqli mariadb-client
+RUN apt-get install -y curl php7.4-fpm php7.4-mysqli mariadb-client
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 

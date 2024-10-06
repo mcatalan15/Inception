@@ -1,8 +1,8 @@
 services:
   nginx:
+    image: nginx
     container_name: nginx
     build: ./requirements/nginx
-    image: nginx
     ports:
       - 443:443
     depends_on:
@@ -23,12 +23,8 @@ services:
       context: ./requirements/mariadb
     networks:
       - inception
-    environment:
-      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - mariadb_data:/var/lib/mysql
 

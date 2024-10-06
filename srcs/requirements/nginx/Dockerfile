@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:11.7
 
 # Update and upgrade in order to install nginx
 RUN apt upgrade -y && apt update -y
