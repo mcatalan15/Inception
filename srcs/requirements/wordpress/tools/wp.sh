@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sleep 5;
 # Check if WordPress is already installed
 if [ -f ./wp-config.php ]; then
     echo "WordPress already exists"
@@ -27,7 +28,7 @@ else
 
     # Create a user
     wp user create $WORDPRESS_USER $WORDPRESS_EMAIL --role=author --user_pass=$WORDPRESS_USER_PASS --allow-root
-    if [ $? -ne 0 ]; then
+    if [ $? -ne  ]; then
         echo "Error: User creation failed"
         exit 1
     fi

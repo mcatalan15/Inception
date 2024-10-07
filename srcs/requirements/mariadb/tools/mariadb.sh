@@ -1,6 +1,7 @@
 #! /bin/bash
 
-service mysql start;
+# Start mysql as a background process
+mysqld_safe &
 
 sleep 10;
 
@@ -22,8 +23,7 @@ mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'
 # Refresh all so that MySQL takes it into account
 mysql -e "FLUSH PRIVILEGES;"
 
-/etc/init.d/mysql stop
+# Keep the MySQL process running in the foreground
+wait
 
-# Start SQL
-exec mysqld
 
