@@ -17,36 +17,69 @@ services:
 
   mariadb:
     image: mariadb
-    restart: always
     container_name: mariadb
     build:
       context: ./requirements/mariadb
-    networks:
-      - inception
-    env_file:
-      - .env
     volumes:
       - mariadb_data:/var/lib/mysql
+    env_file:
+      - .env
+    restart: always
+    networks:
+      - inception
 
   wordpress:
     image: wordpress
-    restart: always
     container_name: wordpress
+    build: ./requirements/wordpress
     depends_on:
       - mariadb    
-    build: ./requirements/wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    env_file:
+      - .env
+    restart: always
     networks:
       - inception
+
+# Bonus
+  ftp:
+    image: ftp
+    container_name: ftp
+    build:
+      context: ./requirements/bonus/ftp
+    ports:
+      - "21:21"
+      - "30000-30100:30000-30100"
+    depends_on:
+      - wordpress
     env_file:
       - .env
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_data:/var/www/hmtl
+    restart: always
+    networks:
+      - inception
 
+  redis:
+    image: redis
+    container_name: redis
+    build: ./requirements/bonus/redis
+    depends_on:
+      - wordpress
+    ports:
+      - '6379:6379'
+    restart: always
+    networks:
+      - inception
+
+# Network
 networks:
   inception:
     name: inception
     driver: bridge
 
+# Volumes
 volumes:
   mariadb_data:
     driver: local
