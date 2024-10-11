@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Start mysql as a background process
-mysqld_safe &
+mysqld_safe
 
 sleep 10;
 
@@ -22,4 +22,4 @@ mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'
 mysql -e "FLUSH PRIVILEGES;"
 
 # Keep the MySQL process running in the foreground
-wait
+#wait

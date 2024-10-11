@@ -1,3 +1,4 @@
+# Use Debian base image
 FROM debian:11.7
 
 # Update and upgrade in order to install nginx
@@ -25,10 +26,11 @@ RUN mkdir -p /run/nginx
 # Take base NGINX conf file and modify with our ./conf/nginx.conf
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-#Ensure that we'll have te rights first the root then the main user
+#Ensure that we'll have te rights of the web root directory
 RUN chmod 755 /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
+# Open port 443 for connection
 EXPOSE 443
 
 # Launch NGINX

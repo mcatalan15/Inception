@@ -10,7 +10,6 @@ vol:
 	sudo chown -R $(USER) $(HOME)/data/
 
 clean:
-	
 	sudo rm -rf ${HOME}/data/mysql/*
 	sudo rm -rf ${HOME}/data/wordpress/*
 	@docker stop $$(docker ps -qa);
@@ -20,7 +19,7 @@ clean:
 	@docker network rm inception;
 
 status:
-	@docker ps
+	@docker ps -a
 
 re: clean all
 
